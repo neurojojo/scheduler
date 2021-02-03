@@ -1,0 +1,33 @@
+<style>
+body
+  background: black
+.channel
+  position: relative
+  background: gray
+  width: 100%
+  height: 52px
+.block
+  top: 0
+  position: absolute
+  width: 800px
+  height: 52px
+  background: green
+  margin: 0 auto
+  overflow: visible
+.handle
+  position: absolute
+  top: 0
+  width: 2px
+  height: 52px
+  background: white
+  cursor: ew-resize !important
+    </style>
+
+  <div class="channel">
+  <div class="block">
+    <!--  LEFT HANDLE  -->
+    <div class="handle left" data-clickable="true"></div>
+    <!--  RIGHT HANDLE  -->
+    <div class="handle right" data-clickable="true"></div>
+  </div>
+</div>

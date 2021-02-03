@@ -1,0 +1,18 @@
+<html>
+<head></head>
+<body>
+	<div id="thisDiv">&nbsp;</div>
+	<div id="thatDiv">&nbsp;</div>
+</body>
+<script type="text/javascript">
+	updateTime();
+	function updateTime() {
+		var currentTime = new Date ( );
+		document.getElementById('thisDiv').firstChild.nodeValue = `${currentTime.getDay()}  ${currentTime.getHours()} ${currentTime.getMinutes()} ${currentTime.getSeconds()}`;
+	}
+
+	document.getElementById('thatDiv').firstChild.nodeValue = ( 1>0 ? 'hi' : 'bye' );
+
+
+	let timerId = setInterval( () => updateTime(), 1000);
+</script>

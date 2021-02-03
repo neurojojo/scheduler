@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Draggable, Moveable and Resizable DIV using jQuery</title>
+    
+    <link href="nov10_files/jquery-ui.css" rel="stylesheet" type="text/css">
+    <script src="nov10_files/jquery.js"></script><script>try {
+                        Object.defineProperty(screen, "availTop", { value: 0 });
+                    } catch (e) {}
+                    try {
+                        Object.defineProperty(screen, "availLeft", { value: 0 });
+                    } catch (e) {}
+                    try {
+                        Object.defineProperty(screen, "availWidth", { value: 1600 });
+                    } catch (e) {}
+                    try {
+                        Object.defineProperty(screen, "availHeight", { value: 900 });
+                    } catch (e) {}
+                    try {
+                        Object.defineProperty(screen, "colorDepth", { value: 24 });
+                    } catch (e) {}
+                    try {
+                        Object.defineProperty(screen, "pixelDepth", { value: 24 });
+                    } catch (e) {}
+                    try {
+                        Object.defineProperty(navigator, "hardwareConcurrency", { value: 8 });
+                    } catch (e) {}
+                    try {
+                        Object.defineProperty(navigator, "appVersion", { value: "5.0 (Windows)" });
+                    } catch (e) {}
+                    try {
+                        Object.defineProperty(navigator, "doNotTrack", { value: "unspecified" });
+                    } catch (e) {}
+                    
+            try {
+                window.screenY = 893
+            } catch (e) { }
+        
+            try {
+                window.screenTop = 893
+            } catch (e) { }
+        
+            try {
+                window.top.window.outerHeight = window.screen.height
+            } catch (e) { }
+        
+            try {
+                window.screenX = 1593
+            } catch (e) { }
+        
+            try {
+                window.screenLeft = 1593
+            } catch (e) { }
+        
+            try {
+                window.top.window.outerWidth = window.screen.width
+            } catch (e) { }
+        </script>
+    <script src="nov10_files/jquery-ui.js"></script>
+    <script src="nov10_files/d3.js"></script>
+
+    <style>
+        .dayDiv { 
+            width:150px; 
+            height:600px; 
+            top: 100px;
+            padding:0px; 
+            margin:0px; 
+            font:13px Arial; 
+            position:absolute;
+            float:left;
+        	box-sizing: border-box;
+        } 
+        .taskBox {
+        	background-color: rgba(255,99,71,0.9);
+        	box-sizing: border-box;
+        }
+        table.scheduleTable {
+        	border: 1px black solid;
+        	width: 100%;
+        	height: 100%;
+        	padding: 0;
+        	margin: 0;
+        	box-sizing: border-box;
+        }
+        td.hourCell {
+        	border-bottom: 2px rgba(100,100,100,0.5) solid;
+        }
+        .closeBtn {
+        	height:10%;
+        	margin-left: 80%;
+        	font-size: 12px;
+        }
+        #divHours table {
+        	border: none;
+        	width: 50%;
+        	margin-left: 50%; 
+        }
+        span {
+        	height:1px;
+        }
+    </style>
+</head>
+<body style="cursor: auto;">
+
+    <div style="width:800px; position:absolute;">
+        <div id="divHours" class="dayDiv" style="left: 0%; height: 600px;">
+        <table class="scheduleTable" id="divHours_table"><tbody><tr class="hourRow"><td class="hourCell" id="divHours_table_td0"><span>08:00</span></td></tr><tr class="hourRow"><td class="hourCell" id="divHours_table_td1"><span>08:30</span></td></tr><tr class="hourRow"><td class="hourCell" id="divHours_table_td2"><span>09:00</span></td></tr><tr class="hourRow"><td class="hourCell" id="divHours_table_td3"><span>09:30</span></td></tr><tr class="hourRow"><td class="hourCell" id="divHours_table_td4"><span>10:00</span></td></tr><tr class="hourRow"><td class="hourCell" id="divHours_table_td5"><span>10:30</span></td></tr><tr class="hourRow"><td class="hourCell" id="divHours_table_td6"><span>11:00</span></td></tr><tr class="hourRow"><td class="hourCell" id="divHours_table_td7"><span>11:30</span></td></tr><tr class="hourRow"><td class="hourCell" id="divHours_table_td8"><span>12:00</span></td></tr><tr class="hourRow"><td class="hourCell" id="divHours_table_td9"><span>12:30</span></td></tr><tr class="hourRow"><td class="hourCell" id="divHours_table_td10"><span>01:00</span></td></tr><tr class="hourRow"><td class="hourCell" id="divHours_table_td11"><span>01:30</span></td></tr><tr class="hourRow"><td class="hourCell" id="divHours_table_td12"><span>02:00</span></td></tr><tr class="hourRow"><td class="hourCell" id="divHours_table_td13"><span>02:30</span></td></tr><tr class="hourRow"><td class="hourCell" id="divHours_table_td14"><span>03:00</span></td></tr><tr class="hourRow"><td class="hourCell" id="divHours_table_td15"><span>03:30</span></td></tr><tr class="hourRow"><td class="hourCell" id="divHours_table_td16"><span>04:00</span></td></tr><tr class="hourRow"><td class="hourCell" id="divHours_table_td17"><span>04:30</span></td></tr><tr class="hourRow"><td class="hourCell" id="divHours_table_td18"><span>05:00</span></td></tr><tr class="hourRow"><td class="hourCell" id="divHours_table_td19"><span>05:30</span></td></tr></tbody></table></div>
+        <div id="divMonday" class="dayDiv" style="left: 20%; height: 600px;">
+        <table class="scheduleTable" id="divMonday_table"><tbody><tr class="hourRow"><td class="hourCell" id="divMonday_table_td0"></td></tr><tr class="hourRow"><td class="hourCell" id="divMonday_table_td1"></td></tr><tr class="hourRow"><td class="hourCell" id="divMonday_table_td2"></td></tr><tr class="hourRow"><td class="hourCell" id="divMonday_table_td3"></td></tr><tr class="hourRow"><td class="hourCell" id="divMonday_table_td4"></td></tr><tr class="hourRow"><td class="hourCell" id="divMonday_table_td5"></td></tr><tr class="hourRow"><td class="hourCell" id="divMonday_table_td6"></td></tr><tr class="hourRow"><td class="hourCell" id="divMonday_table_td7"></td></tr><tr class="hourRow"><td class="hourCell" id="divMonday_table_td8"></td></tr><tr class="hourRow"><td class="hourCell" id="divMonday_table_td9"></td></tr><tr class="hourRow"><td class="hourCell" id="divMonday_table_td10"></td></tr><tr class="hourRow"><td class="hourCell" id="divMonday_table_td11"></td></tr><tr class="hourRow"><td class="hourCell" id="divMonday_table_td12"></td></tr><tr class="hourRow"><td class="hourCell" id="divMonday_table_td13"></td></tr><tr class="hourRow"><td class="hourCell" id="divMonday_table_td14"></td></tr><tr class="hourRow"><td class="hourCell" id="divMonday_table_td15"></td></tr><tr class="hourRow"><td class="hourCell" id="divMonday_table_td16"></td></tr><tr class="hourRow"><td class="hourCell" id="divMonday_table_td17"></td></tr><tr class="hourRow"><td class="hourCell" id="divMonday_table_td18"></td></tr><tr class="hourRow"><td class="hourCell" id="divMonday_table_td19"></td></tr></tbody></table></div>
+        <div id="divTuesday" class="dayDiv" style="left: 40%; height: 600px;">
+        <table class="scheduleTable" id="divTuesday_table"><tbody><tr class="hourRow"><td class="hourCell" id="divTuesday_table_td0"></td></tr><tr class="hourRow"><td class="hourCell" id="divTuesday_table_td1"></td></tr><tr class="hourRow"><td class="hourCell" id="divTuesday_table_td2"></td></tr><tr class="hourRow"><td class="hourCell" id="divTuesday_table_td3"></td></tr><tr class="hourRow"><td class="hourCell" id="divTuesday_table_td4"></td></tr><tr class="hourRow"><td class="hourCell" id="divTuesday_table_td5"></td></tr><tr class="hourRow"><td class="hourCell" id="divTuesday_table_td6"></td></tr><tr class="hourRow"><td class="hourCell" id="divTuesday_table_td7"></td></tr><tr class="hourRow"><td class="hourCell" id="divTuesday_table_td8"></td></tr><tr class="hourRow"><td class="hourCell" id="divTuesday_table_td9"></td></tr><tr class="hourRow"><td class="hourCell" id="divTuesday_table_td10"></td></tr><tr class="hourRow"><td class="hourCell" id="divTuesday_table_td11"></td></tr><tr class="hourRow"><td class="hourCell" id="divTuesday_table_td12"></td></tr><tr class="hourRow"><td class="hourCell" id="divTuesday_table_td13"></td></tr><tr class="hourRow"><td class="hourCell" id="divTuesday_table_td14"></td></tr><tr class="hourRow"><td class="hourCell" id="divTuesday_table_td15"></td></tr><tr class="hourRow"><td class="hourCell" id="divTuesday_table_td16"></td></tr><tr class="hourRow"><td class="hourCell" id="divTuesday_table_td17"></td></tr><tr class="hourRow"><td class="hourCell" id="divTuesday_table_td18"></td></tr><tr class="hourRow"><td class="hourCell" id="divTuesday_table_td19"></td></tr></tbody></table></div>
+        <div id="divWednesday" class="dayDiv" style="left: 60%; height: 600px;">
+        <table class="scheduleTable" id="divWednesday_table"><tbody><tr class="hourRow"><td class="hourCell" id="divWednesday_table_td0"></td></tr><tr class="hourRow"><td class="hourCell" id="divWednesday_table_td1"></td></tr><tr class="hourRow"><td class="hourCell" id="divWednesday_table_td2"></td></tr><tr class="hourRow"><td class="hourCell" id="divWednesday_table_td3"></td></tr><tr class="hourRow"><td class="hourCell" id="divWednesday_table_td4"></td></tr><tr class="hourRow"><td class="hourCell" id="divWednesday_table_td5"></td></tr><tr class="hourRow"><td class="hourCell" id="divWednesday_table_td6"></td></tr><tr class="hourRow"><td class="hourCell" id="divWednesday_table_td7"></td></tr><tr class="hourRow"><td class="hourCell" id="divWednesday_table_td8"></td></tr><tr class="hourRow"><td class="hourCell" id="divWednesday_table_td9"></td></tr><tr class="hourRow"><td class="hourCell" id="divWednesday_table_td10"></td></tr><tr class="hourRow"><td class="hourCell" id="divWednesday_table_td11"></td></tr><tr class="hourRow"><td class="hourCell" id="divWednesday_table_td12"></td></tr><tr class="hourRow"><td class="hourCell" id="divWednesday_table_td13"></td></tr><tr class="hourRow"><td class="hourCell" id="divWednesday_table_td14"></td></tr><tr class="hourRow"><td class="hourCell" id="divWednesday_table_td15"></td></tr><tr class="hourRow"><td class="hourCell" id="divWednesday_table_td16"></td></tr><tr class="hourRow"><td class="hourCell" id="divWednesday_table_td17"></td></tr><tr class="hourRow"><td class="hourCell" id="divWednesday_table_td18"></td></tr><tr class="hourRow"><td class="hourCell" id="divWednesday_table_td19"></td></tr></tbody></table></div>
+        <div id="divThursday" class="dayDiv" style="left: 80%; height: 600px;">
+        <table class="scheduleTable" id="divThursday_table"><tbody><tr class="hourRow"><td class="hourCell" id="divThursday_table_td0"></td></tr><tr class="hourRow"><td class="hourCell" id="divThursday_table_td1"></td></tr><tr class="hourRow"><td class="hourCell" id="divThursday_table_td2"></td></tr><tr class="hourRow"><td class="hourCell" id="divThursday_table_td3"></td></tr><tr class="hourRow"><td class="hourCell" id="divThursday_table_td4"></td></tr><tr class="hourRow"><td class="hourCell" id="divThursday_table_td5"></td></tr><tr class="hourRow"><td class="hourCell" id="divThursday_table_td6"></td></tr><tr class="hourRow"><td class="hourCell" id="divThursday_table_td7"></td></tr><tr class="hourRow"><td class="hourCell" id="divThursday_table_td8"></td></tr><tr class="hourRow"><td class="hourCell" id="divThursday_table_td9"></td></tr><tr class="hourRow"><td class="hourCell" id="divThursday_table_td10"></td></tr><tr class="hourRow"><td class="hourCell" id="divThursday_table_td11"></td></tr><tr class="hourRow"><td class="hourCell" id="divThursday_table_td12"></td></tr><tr class="hourRow"><td class="hourCell" id="divThursday_table_td13"></td></tr><tr class="hourRow"><td class="hourCell" id="divThursday_table_td14"></td></tr><tr class="hourRow"><td class="hourCell" id="divThursday_table_td15"></td></tr><tr class="hourRow"><td class="hourCell" id="divThursday_table_td16"></td></tr><tr class="hourRow"><td class="hourCell" id="divThursday_table_td17"></td></tr><tr class="hourRow"><td class="hourCell" id="divThursday_table_td18"></td></tr><tr class="hourRow"><td class="hourCell" id="divThursday_table_td19"></td></tr></tbody></table></div>
+        <div id="divFriday" class="dayDiv" style="left: 100%; height: 600px;">
+        <table class="scheduleTable" id="divFriday_table"><tbody><tr class="hourRow"><td class="hourCell" id="divFriday_table_td0"></td></tr><tr class="hourRow"><td class="hourCell" id="divFriday_table_td1"></td></tr><tr class="hourRow"><td class="hourCell" id="divFriday_table_td2"></td></tr><tr class="hourRow"><td class="hourCell" id="divFriday_table_td3"></td></tr><tr class="hourRow"><td class="hourCell" id="divFriday_table_td4"></td></tr><tr class="hourRow"><td class="hourCell" id="divFriday_table_td5"></td></tr><tr class="hourRow"><td class="hourCell" id="divFriday_table_td6"></td></tr><tr class="hourRow"><td class="hourCell" id="divFriday_table_td7"></td></tr><tr class="hourRow"><td class="hourCell" id="divFriday_table_td8"></td></tr><tr class="hourRow"><td class="hourCell" id="divFriday_table_td9"></td></tr><tr class="hourRow"><td class="hourCell" id="divFriday_table_td10"></td></tr><tr class="hourRow"><td class="hourCell" id="divFriday_table_td11"></td></tr><tr class="hourRow"><td class="hourCell" id="divFriday_table_td12"></td></tr><tr class="hourRow"><td class="hourCell" id="divFriday_table_td13"></td></tr><tr class="hourRow"><td class="hourCell" id="divFriday_table_td14"></td></tr><tr class="hourRow"><td class="hourCell" id="divFriday_table_td15"></td></tr><tr class="hourRow"><td class="hourCell" id="divFriday_table_td16"></td></tr><tr class="hourRow"><td class="hourCell" id="divFriday_table_td17"></td></tr><tr class="hourRow"><td class="hourCell" id="divFriday_table_td18"></td></tr><tr class="hourRow"><td class="hourCell" id="divFriday_table_td19"></td></tr></tbody></table></div>
+    </div>
+
+
+<script>
+    var palette = d3.scale.category20();
+    var tasks = 0;
+
+/* Time array */
+var timeArr = [];
+for(i=8; i<24; i++) {
+  for(j=0; j<2; j++) {
+    ( i<=12 ) ? hour = i : hour = i-12;
+    (hour<10) ? hour = `0${hour}` : hour = `${hour}`;
+    timeArr.push(hour + ":" + (j===0 ? "00" : 30*j) );
+  }
+}
+
+    $(document).ready(function() {
+
+    	$('.dayDiv').each(function(index,element){ setupBox(element); });
+    	$('.scheduleTable').each(function(index,element){ addRows(element); });
+
+    	function setupBox(el) {
+    		var offsets = el.getBoundingClientRect();
+    		var height = offsets.height;
+    		var thisId = `#${el.id}`;
+    		var thisId_table = el.id+'_table';
+		$( thisId ).css({'height':'600px'});
+		$( thisId ).append('<table class="scheduleTable" id='+thisId_table+'></table>');
+    	}
+
+    	function addRows(el) {
+
+    		var thisId = `${el.id}`;
+    		for (i=0;i<20;i++) {
+    			thisTd = thisId + '_td';
+    			if (thisTd == 'divHours_table_td') {
+    			thisTd = thisTd + `${i}`;
+    			hourText = `${i}`;
+			$( `#${thisId}` ).append('<tr class="hourRow"><td class="hourCell" id=' + thisTd + '><span>'+timeArr[hourText]+'</span></td></tr>');
+			}else{
+    			thisTd = thisTd + `${i}`;
+			$( `#${thisId}` ).append('<tr class="hourRow"><td class="hourCell" id=' + thisTd + '></td></tr>');
+			}
+		};
+    	}
+
+    	var dayWidth = document.getElementById('divMonday').getBoundingClientRect().width;
+    	console.log(dayWidth)
+    	/* Called by the jQuery each statement below */
+    	function getPos(el) {
+		var offsets = el.getBoundingClientRect();
+		var left = offsets.left;
+		return left;
+	}
+
+        var divLocs = [];
+        $('.dayDiv').each(function(index,element){ divLocs.push(getPos(element)) });
+        
+        function makeTaskBox(event) {
+        	tasks+=1;
+	var dynamic_div = $(document.createElement('div')).css({
+                border: '1px', position: 'absolute', 
+                top: event.clientY,
+                left: event.clientX,
+                backgroundColor: palette(tasks),
+                width: dayWidth, height: '40', padding: '3', margin: '0'
+            });
+	$(dynamic_div).html('<span class="closeBtn">X</span>')
+	$(dynamic_div).dblclick( labelBox );
+	$(dynamic_div).addClass('taskBox');
+
+	function labelBox(event) {
+		let input = prompt('Task?'); 
+		event.stopPropagation(); 
+		input_p = $(document.createElement('span')).css({width:'100%', height:'90%', float:'left', display:'block'}).text(input);
+		input_p.appendTo( $( event.target ) );
+		$( event.target ).css({"border":"2px solid black"})
+	}
+
+            tasks+=1;
+            $(dynamic_div).appendTo("body").draggable({stop: handleDragStop}).resizable({handles:'n,s'});
+	}
+
+	/* This is what happens when a box is dropped */
+	function handleDragStop( event, ui ) {
+	  	var offsetXPos = parseInt( ui.offset.left );
+	  	var offsetYPos = parseInt( ui.offset.top );
+	  	
+	  	distanceToDiv = [];
+	  	divLocs.forEach( distance );
+	  	divToJumpTo = argmin(distanceToDiv);
+
+	  	function distance(item,index) {
+	  		distanceToDiv.push( Math.abs(item-offsetXPos) );
+	  	}
+
+	  	function argmin( array_ ) {
+	  		minVal = Math.min( ...array_ );
+	  		i = -1;
+	  		do {
+	  			argmin = i;
+	  			i++;
+	  			console.log( minVal );
+	  		} while ( array_ [i] != minVal );
+	  		return i;
+	  	}
+
+	  	let newPosition = `${divLocs[divToJumpTo]}px`;
+	  	$( event.target ).animate({"left": newPosition},{"speed":"1ms"});
+	  	let newDistance = offsetYPos - (offsetYPos % 5);
+	  	$( event.target ).animate({"top": newDistance},{"speed":"1ms"});
+	  	$( event.target ).css({"border": "2px rgba(0,100,100,1) solid"})
+	}
+
+	document.addEventListener("dblclick", makeTaskBox);
+
+    });
+</script>
+<div style="border: 2px solid black; position: absolute; top: 170px; left: 168px; background-color: rgb(31, 119, 180); width: 150px; height: 55.6667px; padding: 3px; margin: 0px;" class="taskBox ui-draggable ui-resizable"><span class="closeBtn">X</span><div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><span style="width: 100%; height: 90%; float: left; display: block;">Talking to Alexey</span></div><div style="border: 2px solid rgb(0, 100, 100); position: absolute; top: 225px; left: 168px; background-color: rgb(174, 199, 232); width: 150px; height: 58.6667px; padding: 3px; margin: 0px;" class="taskBox ui-draggable ui-resizable"><span class="closeBtn">X</span><div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><span style="width: 100%; height: 90%; float: left; display: block;">Walk and breakfast</span></div><div style="border: 2px solid rgb(0, 100, 100); position: absolute; top: 285px; left: 168px; background-color: rgb(255, 127, 14); width: 150px; height: 241.667px; padding: 3px; margin: 0px;" class="taskBox ui-draggable ui-resizable"><span class="closeBtn">X</span><div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><span style="width: 100%; height: 90%; float: left; display: block; border: 2px solid black;">Work on scheduler<span style="width: 100%; height: 90%; float: left; display: block;">Tremble figures</span></span></div><div style="border: 2px solid black; position: absolute; top: 530px; left: 168px; background-color: rgb(255, 187, 120); width: 150px; height: 114.667px; padding: 3px; margin: 0px;" class="taskBox ui-draggable ui-resizable"><span class="closeBtn">X</span><div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><span style="width: 100%; height: 90%; float: left; display: block;">Kahlman filtering single molecules</span></div><div style="border: 2px solid black; position: absolute; top: 645px; left: 168px; background-color: rgb(44, 160, 44); width: 150px; height: 61.6667px; padding: 3px; margin: 0px;" class="taskBox ui-draggable ui-resizable"><span class="closeBtn">X</span><div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><span style="width: 100%; height: 90%; float: left; display: block;">Chen's NN</span></div></body></html>

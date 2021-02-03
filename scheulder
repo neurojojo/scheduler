@@ -1,0 +1,377 @@
+<html>
+
+<head>
+</head>
+
+<body onload="PageLoaded();">
+
+  <script>
+    var IsMouseDownDates=false;
+    var IsMouseDownSideLabel=false;
+    var IsMouseDownTopLabel=false;
+    var AnchorRow=0;
+    var AnchorColumn=0;
+    var HoverRow=0;
+    var HoverColumn=0;
+    var WriteMode="";
+    var Dates = [];
+    var xMousePos;
+    var yMousePos;
+    var xMouseRef;
+    var yMouseRef;
+    var count=0;
+    document.onmouseup=MouseUp;
+    var Months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    var DaysOfWeek = ["S","M","T","W","R","F","S"];
+
+    if (document.layers) { // Netscape
+      document.captureEvents(Event.MOUSEMOVE);
+      document.onmousemove = captureMousePosition;
+    } else if (document.all) { // Internet Explorer
+      document.onmousemove = captureMousePosition;
+    } else if (document.getElementById) { // Netcsape 6
+      document.onmousemove = captureMousePosition;
+    }
+
+    var mousewheelevt=(/Firefox/i.test(navigator.userAgent))? "DOMMouseScroll" : "mousewheel" //FF doesn't recognize mousewheel as of FF3.x
+   
+    function wheel(event){
+      var evt=window.event || event //equalize event object
+      var delta=evt.detail? evt.detail*(-240) : evt.wheelDelta
+      delta = delta/Math.abs(delta);
+  //    ShiftCalendar(-7*delta);
+    }
+
+    function captureMousePosition(e) {
+      if (document.layers) {
+          xMousePos = e.pageX;
+          yMousePos = e.pageY;
+          xMousePosMax = window.innerWidth+window.pageXOffset;
+          yMousePosMax = window.innerHeight+window.pageYOffset;
+      } else if (document.all) {
+          xMousePos = window.event.x+document.body.scrollLeft;
+          yMousePos = window.event.y+document.body.scrollTop;
+          xMousePosMax = document.body.clientWidth+document.body.scrollLeft;
+          yMousePosMax = document.body.clientHeight+document.body.scrollTop;
+      } else if (document.getElementById) {
+          xMousePos = e.pageX;
+          yMousePos = e.pageY;
+          xMousePosMax = window.innerWidth+window.pageXOffset;
+          yMousePosMax = window.innerHeight+window.pageYOffset;
+      }
+
+      if (IsMouseDownSideLabel) {
+        if (yMousePos > yMouseRef+20) {
+          yMouseRef = yMousePos;
+          ShiftCalendar(-7);
+        } else if (yMousePos < yMouseRef-20) {
+          yMouseRef = yMousePos;
+          ShiftCalendar(+7);
+        }
+      }
+
+      if (IsMouseDownTopLabel) {
+        var DateOfCell = document.getElementById("DateOf-1-1").value.split("-");
+        var t = new Date(DateOfCell[0],DateOfCell[1]-1,DateOfCell[2],12,0);
+
+        if (xMousePos > xMouseRef+20) {
+          xMouseRef = xMousePos;
+          if (t.getDay()==1) {
+            ShiftCalendar(-1);
+          }
+        } else if (xMousePos < xMouseRef-20) {
+          xMouseRef = xMousePos;
+          if (t.getDay()==0) {
+            ShiftCalendar(+1);
+          }
+        }
+      }
+    }
+
+    function MouseDownSideLabel() {
+      IsMouseDownSideLabel=true;
+      yMouseRef = yMousePos;
+    }
+
+    function MouseDownTopLabel() {
+      IsMouseDownTopLabel=true;
+      xMouseRef = xMousePos;
+    }
+
+    function MouseDownDate(Row,Column) {
+      IsMouseDownDates=true;
+      AnchorRow=Row;
+      AnchorColumn=Column;
+      HoverRow=Row;
+      HoverColumn=Column;
+      if (ArraySearch(Dates,document.getElementById("DateOf-"+Row+"-"+Column).value)) {
+        WriteMode = "erase";
+      } else {
+        WriteMode = "write";
+      }
+      ReColor();
+    }
+
+    function MouseOverDate(Row,Column) {
+      if (IsMouseDownDates) {
+        HoverRow=Row;
+        HoverColumn=Column;
+        ReColor();
+      }
+    }
+
+    function AddHighlightedDates(HighlightedDates) { 
+      var DateNum=-1;
+  	while (DateNum < HighlightedDates.length) {
+        Dates.push(HighlightedDates[DateNum]);
+        DateNum++;
+      }
+      Dates = Unique(Dates);
+      document.getElementById("PossibleDates").value = Dates.join("|");
+    }
+
+    function RemoveHighlightedDates(HighlightedDates) { 
+      var DateNum=-1;
+      NewDates = [];
+  	while (DateNum < Dates.length) {
+        if (!ArraySearch(HighlightedDates,Dates[DateNum])) {
+          NewDates.push(Dates[DateNum]);
+        }
+        DateNum++;
+      }
+      Dates = Unique(NewDates);
+      document.getElementById("PossibleDates").value = Dates.join("|");
+    }
+
+    function Unique(InputArray) {
+      var a = [];
+      for(var i=0; i<InputArray.length; i++) {
+        unique = 1;
+        for(var j=i+1; j<InputArray.length; j++) {
+          if (InputArray[i] == InputArray[j]) {unique = 0;}
+        }
+        if (unique&&(InputArray[i]!=null)&&(InputArray[i]!="")) { a.push(InputArray[i]); }
+      }
+      return a.sort();
+    }
+
+    function MouseUp() {
+
+      if (WriteMode!="") {
+        var HighlightedDates = [];
+        for (Row=1;Row<=6;Row++) {
+          for (Column=1;Column<=7;Column++) {
+            if (((AnchorRow-Row)*(Row-HoverRow)>=0) && ((AnchorColumn-Column)*(Column-HoverColumn)>=0)) {
+              HighlightedDates.push(document.getElementById("DateOf-"+Row+"-"+Column).value);
+            }
+            document.getElementById("Day-"+Row+"-"+Column).style.border='1px solid black';
+            document.getElementById("Day-"+Row+"-"+Column).style.padding='2px';
+            document.getElementById("Day-"+Row+"-"+Column).style.margin='1px';
+          }
+        }
+
+        if (WriteMode == "write") {
+          AddHighlightedDates(HighlightedDates);
+        } else { // WriteMode == "erase"
+          RemoveHighlightedDates(HighlightedDates);
+        }
+      }
+      WriteMode = "";
+
+      IsMouseDownDates=false;
+      IsMouseDownSideLabel=false;
+      IsMouseDownTopLabel=false;
+
+    }
+
+    function ArraySearch(arr, obj) {
+      for(var i=0; i<arr.length; i++) {
+        if (arr[i] == obj) return true;
+      }
+      return false;
+    }
+
+    function ShiftCalendar(Delta) {
+      for (Row=1;Row<=5;Row++) {
+        var ThisWeek=false;
+        for (Column=1;Column<=7;Column++) {
+          var DateOfCell = document.getElementById("DateOf-"+Row+"-"+Column).value.split("-");
+          t = new Date(DateOfCell[0],DateOfCell[1]-1,DateOfCell[2],12,0);
+          t.setTime(t.getTime()+60*60*24*1000*Delta);
+          var Month = t.getMonth()+1;
+          if (Month<10) { Month = '0'+Month; }
+
+          var DayOfMonth = t.getDate();
+          if (DayOfMonth<10) { DayOfMonth = '0'+DayOfMonth; }
+
+          var FullDateString = t.getFullYear() + "-" + Month + "-" + DayOfMonth;
+
+          document.getElementById("DateOf-"+Row+"-"+Column).value = FullDateString;
+          if ((Row==1)&&(Column==1)) {
+            document.getElementById("TopLeftDate").value = FullDateString;
+          }
+          if (FullDateString == DateLoaded) {
+            document.getElementById("Day-"+Row+"-"+Column).style.fontWeight = "bold";
+            ThisWeek=true;
+          } else {
+            document.getElementById("Day-"+Row+"-"+Column).style.fontWeight = "normal";
+          }
+          document.getElementById("Day-"+Row+"-"+Column).innerHTML = t.getDate();
+
+        }
+
+        var DateOfCell = document.getElementById("DateOf-"+Row+"-1").value.split("-");
+        var DateOfCell2 = document.getElementById("DateOf-"+Row+"-7").value.split("-");
+        var MonthName; var Year;
+
+        if (DateOfCell[1]==DateOfCell2[1]) {
+          MonthName = Months[DateOfCell[1]-1];
+        } else {
+          MonthName = Months[DateOfCell[1]-1]+"/"+Months[DateOfCell2[1]-1];
+        }
+        if (ThisWeek) {
+          document.getElementById("Month-"+Row).innerHTML = "<b>"+ MonthName +"</b>";
+        } else {
+          document.getElementById("Month-"+Row).innerHTML = MonthName;
+        }
+
+        if (DateOfCell[0]==DateOfCell2[0]) {
+          Year = DateOfCell[0];
+        } else {
+          Year = DateOfCell[0]+"/"+DateOfCell2[0];
+        }
+        if (ThisWeek) {
+          document.getElementById("Year-"+Row).innerHTML = "<b>"+ Year +"</b>";
+        } else {
+          document.getElementById("Year-"+Row).innerHTML = Year;
+        }
+
+      }
+
+      for (Column=1;Column<=7;Column++) {
+        var DateOfCell = document.getElementById("DateOf-1-"+Column).value.split("-");
+        var t = new Date(DateOfCell[0],DateOfCell[1]-1,DateOfCell[2],12,0);
+        document.getElementById("DayOfWeek-"+Column).innerHTML = DaysOfWeek[t.getDay()];
+        document.getElementById("DateOf-6-"+Column).value = t.getDay();
+      }
+
+      ReColor();
+    }
+
+    function ShiftToDate(NewTopLeftDate,ShiftToLeft) {
+       var CalendarStartTimeString = document.getElementById("DateOf-1-1").value.split("-");
+       CalendarStartTime = new Date(CalendarStartTimeString[0],CalendarStartTimeString[1]-1,CalendarStartTimeString[2],12,0);
+       var NewStartTimeString = NewTopLeftDate.split("-");
+       NewStartTime = new Date(NewStartTimeString[0],NewStartTimeString[1]-1,NewStartTimeString[2],12,0);
+
+  	 ShiftDays = (NewStartTime.getTime() - CalendarStartTime.getTime())/(60*60*24*1000);
+       if (ShiftToLeft) {
+         ShiftCalendar(ShiftDays);
+       } else {
+         ShiftCalendar(7*Math.floor(ShiftDays/7));
+       }
+    }
+
+    function ReColor() {
+      for (Row=1;Row<=6;Row++) {
+        for (Column=1;Column<=7;Column++) {
+          if ((WriteMode!="") && ((AnchorRow-Row)*(Row-HoverRow)>=0) && ((AnchorColumn-Column)*(Column-HoverColumn)>=0)) {
+
+            if (WriteMode == "write") {
+              document.getElementById("Day-"+Row+"-"+Column).style.backgroundColor='green';
+              document.getElementById("Day-"+Row+"-"+Column).style.color='white';
+            } else {
+              document.getElementById("Day-"+Row+"-"+Column).style.backgroundColor='#ffdede';
+              document.getElementById("Day-"+Row+"-"+Column).style.color='black';
+            }
+            document.getElementById("Day-"+Row+"-"+Column).style.border='0px solid black';
+            document.getElementById("Day-"+Row+"-"+Column).style.padding='4px';
+            document.getElementById("Day-"+Row+"-"+Column).style.margin='0px';
+          } else {
+            document.getElementById("Day-"+Row+"-"+Column).style.border='1px solid black';
+            document.getElementById("Day-"+Row+"-"+Column).style.padding='2px';
+            document.getElementById("Day-"+Row+"-"+Column).style.margin='1px';
+
+            if (ArraySearch(Dates,document.getElementById("DateOf-"+Row+"-"+Column).value)) {
+              document.getElementById("Day-"+Row+"-"+Column).style.backgroundColor='green';
+              document.getElementById("Day-"+Row+"-"+Column).style.color='white';
+            } else {
+              document.getElementById("Day-"+Row+"-"+Column).style.backgroundColor='#ffdede';
+              document.getElementById("Day-"+Row+"-"+Column).style.color='black';
+            }
+
+          }
+        }
+      }
+    }
+
+    function DateTypesChanged() {
+      if (document.getElementById("DateTypes").value == "SpecificDates") {
+  	  document.getElementById("SpecificDates").style.display = '';
+  	  document.getElementById("DaysOfTheWeek").style.display = 'none';
+  	  document.getElementById("Today").style.display = '';
+  	  document.getElementById("NoTimeZoneSelect").style.display='none';
+            document.getElementById("TimeZoneTextAndSelect").style.display = '';
+  	} else {
+  	  document.getElementById("SpecificDates").style.display = 'none';
+  	  document.getElementById("DaysOfTheWeek").style.display = '';
+  	  document.getElementById("Today").style.display = 'none';
+  	  document.getElementById("NoTimeZoneSelect").style.display = '';
+  	  document.getElementById("TimeZoneTextAndSelect").style.display = 'none';
+  	}
+    }
+    
+    function PageLoaded() {
+      ShiftToDate(document.getElementById("TopLeftDate").value,true);
+      DateTypesChanged();
+      Dates = document.getElementById("PossibleDates").value.split("|");
+      ReColor();
+
+      timezones = moment.tz.names();
+      var select = document.getElementById("TimeZone"); 
+      var timezone = moment.tz.guess();
+
+      for(var i = 0; i < timezones.length; i++) {
+        var opt = timezones[i];
+        var el = document.createElement("option");
+        el.textContent = opt;
+        el.value = opt;
+        select.appendChild(el);
+        if (timezone == opt) select.options[i].selected = true;
+      }
+    }
+    
+    function PreSubmitCheck() {
+      
+      if (document.getElementById("NewEventName").value == "New Event Name") {
+        alert("Your event cannot be called \"New Event Name\"");
+        return false;
+      }
+      
+      DateCount=0;
+      var pattern="";
+      if (document.getElementById("DateTypes").value == "SpecificDates") {
+        pattern = /-/;
+      } else {
+        pattern = /^\d+$/;
+      }
+
+      for ( var i=0, len=Dates.length; i<len; i++ ) {
+        if (Dates[i].match(pattern)) DateCount++;
+      }
+
+      if (DateCount==0) {
+        alert("You must select at least one date.");
+        return false;
+      }
+      gtag_report_conversion();
+        
+      return true;
+    }
+
+  </script>
+
+  <form action="SaveNewEvent.php" method=POST onsubmit="return PreSubmitCheck();">
+  
+
+</body>

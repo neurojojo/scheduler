@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Draggable, Moveable and Resizable DIV using jQuery</title>
+    
+    <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+
+    <style>
+        .dayDiv { 
+            width:150px; 
+            height:800px; 
+            padding:0px; 
+            margin:0px; 
+            top:50px;
+            font:13px Arial; 
+            position:absolute;
+            float:left;
+            border: none;
+        	box-sizing: border-box;
+        } 
+        table.scheduleTable {
+        	border: none;
+        	width: 100%;
+        	height: 900px;
+        	padding: 0;
+        	margin: 0;
+        	box-sizing: border-box;
+        	border-collapse:collapse;
+        }
+        tr{
+        	border: none;
+        	padding:0;
+        	border-collapse:collapse;
+        }
+        td.hourCell {
+        	border: none;
+        	border-collapse:collapse;
+        	height: 30px;
+        	text-align: right;
+        }
+        td.hourCell.even {
+        	border: none;
+        	background-color: rgba(150,150,150,.1);
+        }
+        td.hourCell.odd {
+        	border: none;
+        	background-color: rgba(100,100,100,.2);
+        }
+        .taskBox {
+        	background-color: rgba(255,99,71,0.9);
+        	box-sizing: border-box;
+        	padding: 10px;
+        	font-size:16px;
+        	font-family: Arial;
+        }
+        .taskBox .closeBtn {
+	  width: 15px;
+	  height: 15px;
+	  border-radius: 50%;
+	  background: white;
+	  position: absolute;
+	  left: 90%;
+	  top: -5px;
+	  cursor: crosshair;
+	}
+        .taskBox .editBtn {
+	  width: 5px;
+	  height: 10px;
+	  background: white;
+	  position: absolute;
+	  left: -5%;
+	  top: 0;
+	  cursor: crosshair;
+	}
+        .taskBox .closeBtn:hover {
+        	background-color: #fc0f02;
+        }
+        #divHours table {
+        	border: none;
+        	width: 50%;
+        	margin-left: 50%; 
+        }
+        span {
+        	height:1px;
+        }
+        body{
+        	margin:0;
+        }
+        #blank {
+        	color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <div style="width:800px; position:absolute;">
+        <div id="divHours" class="dayDiv" style="left:0%;"><h3 id="blank">_</h3>
+        </div>
+        <div id="divMonday" class="dayDiv" style="left:20%;"><h3>Monday</h3>
+        </div>
+        <div id="divTuesday" class="dayDiv" style="left:40%"><h3>Tuesday</h3>
+        </div>
+        <div id="divWednesday" class="dayDiv" style="left:60%"><h3>Wednesday</h3>
+        </div>
+        <div id="divThursday" class="dayDiv" style="left:80%"><h3>Thursday</h3>
+        </div>
+        <div id="divFriday" class="dayDiv" style="left:100%"><h3>Friday</h3>
+        </div>
+        <div id="divSaturday" class="dayDiv" style="left:120%"><h3>Saturday</h3>
+        </div>
+        <div id="divSunday" class="dayDiv" style="left:140%"><h3>Sunday</h3>
+        </div>
+    </div>
+</body>
+
+<script>
+    var palette = d3.scale.category20();
+    var tasks = 0;
+    var td_x = [], td_y = [];
+
+/* Time array */
+var timeArr = [];
+for(i=8; i<24; i++) {
+  for(j=0; j<2; j++) {
+    ( i<=12 ) ? hour = i : hour = i-12;
+    (hour<10) ? hour = `0${hour}` : hour = `${hour}`;
+    timeArr.push(hour + ":" + (j===0 ? "00" : 30*j) );
+  }
+}
+
+	function closeTask( taskNumber ) {
+		let divToClose = `#taskBox${taskNumber}`;
+		$( divToClose ).remove();
+		console.log( divToClose )
+	}
+
+    	function argmin( array_ ) {
+		minVal = Math.min( ...array_ );
+		i = -1;
+		do {
+			i++;
+		} while ( array_ [i] != minVal );
+		return i;
+  	}
+
+    $(document).ready(function() {
+	updateTime();
+	
+	function updateTime() {
+		var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+		var currentTime = new Date ( );
+		var day = currentTime.getDay();
+		var hour = currentTime.getHours(); 
+		var minute = currentTime.getMinutes();
+		/*for (i =0; i<2*(hour-8) + ( minute>30 ? 1 : 0); i++) {
+		$(`#div${days[day]}_table_td${i}`).css( {'border-left': "12px black solid", 'border-right': '12px black solid'} )
+		}*/
+		var i = 2*(hour-8) + ( minute>30 ? 1 : 0);
+		thisDiv = document.getElementById(`div${days[day]}_table_td${i}`);
+		$(thisDiv).css( {'border-left': "12px black solid"} )
+		currentTop = (thisDiv == null ? 0 : thisDiv.getBoundingClientRect().top );
+		console.log( $('.taskBox') );
+		$('.taskBox').each( function( item ){ 
+			(this.getBoundingClientRect().top <= currentTop) ? ( $(this).css('opacity','0.7') ) :  ( $(this).css('opacity','1') )  } );
+	}
+
+	let timerId = setInterval( () => updateTime(), 1000);
+
+
+    	$('.dayDiv').each(function(index,element){ setupBox(element); });
+    	$('.scheduleTable').each(function(index,element){ addRows(element); });
+
+    	/* Each day's div is assigned an Id and a scheduleTable */
+    	function setupBox(el) {
+    		var thisId = `#${el.id}`;
+    		var thisId_table = el.id+'_table';
+		$( thisId ).append('<table class="scheduleTable" id='+thisId_table+'></table>');
+    	}
+
+    	/* Each row of the scheduleTable conforms to the size of the scheduleTable */
+    	function addRows(el) {
+    		var thisId = `${el.id}`;
+    		for (i=0;i<29;i++) {
+    			(i%2==0) ? thisCellClass = "even" : thisCellClass = "odd";
+    			thisTd = thisId + '_td';
+    			if (thisTd == 'divHours_table_td') {
+    			thisTd = thisTd + `${i}`;
+    			hourText = `${i}`;
+			$( `#${thisId}` ).append('<tr class="hourRow"><td class="hourCell" id=' + thisTd + '><span>'+timeArr[hourText]+'</span></td></tr>');
+			}else{
+    			thisTd = thisTd + `${i}`;
+			$( `#${thisId}` ).append('<tr class="hourRow"><td class="hourCell '+thisCellClass+'" id=' + thisTd + '></td></tr>');
+			}
+		};
+    	}
+
+    	var dayWidth = document.getElementById('divMonday').getBoundingClientRect().width;
+    	console.log(dayWidth)
+    	/* Called by the jQuery each statement below */
+    	function getPos(el) {
+		var offsets = el.getBoundingClientRect();
+		return offsets.left;
+	}
+
+        var divLocs = [];
+        $('.dayDiv').each(function(index,element){ divLocs.push(getPos(element)) });
+        
+        /* Start of code for creating a task box */
+        function makeTaskBox(event) {
+        	tasks+=1;
+        	let thisColor = palette(tasks);
+	var dynamic_div = $(document.createElement('div')).css({
+                border: '1px', position: 'absolute', 
+                top: event.clientY,
+                left: event.clientX,
+                backgroundColor: thisColor,
+                width: dayWidth, height: '64', margin: '4'
+            });
+	dynamic_div.attr( "id",`taskBox${tasks}` );
+
+	let closeBtnId = `closeBtn_${tasks}`;
+	let editBtnId = `editBtn_${tasks}`;
+	let taskId = tasks;
+	$(dynamic_div).html('<div class="editBtn" id='+ editBtnId +' taskId = '+ tasks +' style="border: 3px '+ thisColor +' solid" onclick="editTask('+taskId+')"></div><div class="closeBtn" id='+ closeBtnId +' taskId = '+ tasks +' style="border: 3px '+ thisColor +' solid" onclick="closeTask('+taskId+')"></div>')
+	$(dynamic_div).dblclick( labelBox );
+	$(dynamic_div).addClass('taskBox');
+
+        	/* Prototyping user input for tasks */
+	function labelBox(event) {
+		let input = prompt('Task?'); 
+		event.stopPropagation(); 
+		input_p = $(document.createElement('span')).css({width:'100%', height:'90%', float:'left', display:'block'}).text(input);
+		input_p.appendTo( $( event.target ) );
+	}
+
+            tasks+=1;
+            $(dynamic_div).appendTo("body").draggable({stop: handleDragStop}).resizable({handles:'n,s', stop: fxn})
+	} /* End of task box */
+
+	function fxn(event, ui) {
+		console.log( ui.position );
+		let offsetTop = ui.position.top;
+
+		let bottom_arr = [], top_arr = [];
+
+		for (i = 0; i<td_x.length; i++){ 
+		  top_arr.push( Math.abs( td_y[i] - offsetTop ) );
+		}
+
+		newTop = td_y[argmin(top_arr)];
+		console.log( event.target );
+		$( event.target ).animate({"top": newTop},1000,'linear');
+		/*$( event.target ).height( 500 );*/
+		
+	}
+	/* This is what happens when a box is dropped */
+	function handleDragStop( event, ui ) {
+
+		let offsetTop = ui.position.top,
+			offsetLeft = ui.position.left;
+		
+		let left_arr = [], top_arr = [];
+
+		for (i = 0; i<td_x.length; i++){ 
+		  left_arr.push( Math.abs( td_x[i] - offsetLeft ) );
+		  top_arr.push( Math.abs( td_y[i] - offsetTop ) );
+		}
+
+		newX = td_x[argmin(left_arr)];
+		newY = td_y[argmin(top_arr)];
+	  	
+	  	$( event.target ).animate({"left": newX},1);
+	  	$( event.target ).animate({"top": newY},1);
+	}
+
+	document.addEventListener("dblclick", makeTaskBox);
+	
+	$('td').each(function(index,element){ createLocationMatrix(element); });
+	function createLocationMatrix(el) {
+		offset = el.getBoundingClientRect();
+		td_x.push( offset.left );
+		td_y.push( offset.top );
+	}
+	console.log(td_x)
+
+    });
+</script>
+</html>
